@@ -15,7 +15,8 @@
   },
   "build": {
     "appId": "com.example.turniej",
-    "productName": "Turniej Pojedynkow 0.1.5",
+    "productName": "Turniej Pojedynkow",
+    "artifactName": "${productName}-${version}.${ext}",
     "publish": [
       {
         "provider": "github",
