@@ -2,15 +2,40 @@
   "name": "turniej-pojedynkow",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev-electron": "concurrently \"npm run dev\" \"npm run electron\"",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.example.turniej",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**",
+      "electron/**",
+      "package.json"
+    ],
+    "extraResources": [
+      "out/**"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   },
   "dependencies": {
+    "concurrently": "^9.2.0",
+    "next": "15.4.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.4.1"
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "electron": "^37.2.1",
+    "electron-builder": "^26.0.12"
   }
 }
