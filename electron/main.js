@@ -3,6 +3,7 @@ const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
 let mainWindow, audienceWindow;
+let manualCheck = false;
 
 const isMac = process.platform === 'darwin';
 
@@ -14,6 +15,7 @@ const template = [
             {
                 label: 'Sprawdź aktualizacje',
                 click: () => {
+                    manualCheck = true;
                     autoUpdater.checkForUpdates();
                     dialog.showMessageBox({
                         type: 'info',
@@ -35,6 +37,7 @@ function createWindows() {
     const secondaryDisplay = displays[1] || primaryDisplay;
 
     mainWindow = new BrowserWindow({
+        title: "Turniej Pojedynków",
         x: primaryDisplay.bounds.x,
         y: primaryDisplay.bounds.y,
         width: 1280,
@@ -43,6 +46,7 @@ function createWindows() {
     });
 
     audienceWindow = new BrowserWindow({
+        title: "Turniej Pojedynków - Widownia",
         x: secondaryDisplay.bounds.x,
         y: secondaryDisplay.bounds.y,
         width: 1280,
@@ -57,7 +61,7 @@ function createWindows() {
 app.whenReady().then(() => {
     createWindows();
 
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
 
     autoUpdater.on('update-available', () => {
         dialog.showMessageBox({
@@ -68,11 +72,14 @@ app.whenReady().then(() => {
     });
 
     autoUpdater.on('update-not-available', () => {
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'Aktualizacje',
-            message: 'Masz już najnowszą wersję.'
-        });
+        if (manualCheck) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'Aktualizacje',
+                message: 'Masz już najnowszą wersję.'
+            });
+            manualCheck = false;
+        }
     });
 
     autoUpdater.on('update-downloaded', () => {
@@ -86,7 +93,7 @@ app.whenReady().then(() => {
     });
 
     autoUpdater.on('error', (err) => {
-        console.error('Updater error:', err);
+        console.error('🔥 Błąd autoUpdater:', err);
     });
 });
 
