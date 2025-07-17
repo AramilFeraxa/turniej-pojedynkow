@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "dev-electron": "concurrently \"npm run dev\" \"npm run electron\"",
-    "dist": "cross-env GH_TOKEN=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 electron-builder --publish always"
+    "dist": "cross-env GH_TOKEN=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 electron-builder --publish always"
   },
   "build": {
     "appId": "com.example.turniej",
