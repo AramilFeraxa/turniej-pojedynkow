@@ -40,11 +40,21 @@ export default function Audience() {
         </div>
     );
 
+    const getBorderColor = (house) => {
+        switch (house) {
+            case 'Xifang': return styles.borderRed;
+            case 'Semperos': return styles.borderGreen;
+            case 'Antares': return styles.borderYellow;
+            case 'Imerus': return styles.borderBlue;
+            default: return '';
+        }
+    };
+
     return (
         <RootLayout>
             <div className={styles.wrapper}>
                 <header className={styles.header}>
-                    <h1>Turniej Pojedynków — Widownia</h1>
+                    <h1>Turniej Pojedynków</h1>
                     <p>Runda {currentRound}</p>
                     {matchWinner && (
                         <h2 className={styles.highlight}>Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}</h2>
@@ -55,21 +65,21 @@ export default function Audience() {
                 </header>
 
                 <main className={styles.main}>
-                    <section className={styles.playerCard}>
+                    <section className={`${styles.playerCard} ${getBorderColor(players.p1.house)}`}>
                         <h2>{players.p1.name}</h2>
-                        <p>Dom: {players.p1.house}</p>
-                        <p>Punkty: {players.p1.score}</p>
-                        <p>Wygrane rundy: {players.p1.roundsWon}</p>
+                        <p>Dom: <strong>{players.p1.house}</strong></p>
+                        <p>Punkty: <strong>{players.p1.score}</strong></p>
+                        <p>Wygrane rundy: <strong>{players.p1.roundsWon}</strong></p>
                         {renderSpellBoxes(players.p1)}
                     </section>
 
                     <div className={styles.vs}>VS</div>
 
-                    <section className={styles.playerCard}>
+                    <section className={`${styles.playerCard} ${getBorderColor(players.p2.house)}`}>
                         <h2>{players.p2.name}</h2>
-                        <p>Dom: {players.p2.house}</p>
-                        <p>Punkty: {players.p2.score}</p>
-                        <p>Wygrane rundy: {players.p2.roundsWon}</p>
+                        <p>Dom: <strong>{players.p2.house}</strong></p>
+                        <p>Punkty: <strong>{players.p2.score}</strong></p>
+                        <p>Wygrane rundy: <strong>{players.p2.roundsWon}</strong></p>
                         {renderSpellBoxes(players.p2)}
                     </section>
                 </main>

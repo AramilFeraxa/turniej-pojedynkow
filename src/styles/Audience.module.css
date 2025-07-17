@@ -9,7 +9,7 @@
 
 .header {
     background: #292929;
-    padding: 2rem;
+    padding: 0.5rem;
     border-bottom: 2px solid #444;
 }
 
@@ -156,4 +156,20 @@
     font-weight: 500;
     font-size: 1.2rem;
     margin-top: 0.5rem;
+}
+
+.borderRed {
+    border: 2px solid #ea5153;
+}
+
+.borderGreen {
+    border: 2px solid #75b843;
+}
+
+.borderBlue {
+    border: 2px solid #3973b9;
+}
+
+.borderYellow {
+    border: 2px solid #f7a70b;
 }

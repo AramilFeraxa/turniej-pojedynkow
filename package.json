@@ -1,6 +1,6 @@
 {
   "name": "turniej-pojedynkow",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
