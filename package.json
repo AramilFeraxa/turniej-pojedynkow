@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "dev-electron": "concurrently \"npm run dev\" \"npm run electron\"",
-    "dist": "cross-env GH_TOKEN=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 electron-builder --publish always"
+    "dist": "dotenv electron-builder --publish always"
   },
   "build": {
     "appId": "com.example.turniej",
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "concurrently": "^9.2.0",
-    "cross-env": "^7.0.3",
+    "dotenv": "^17.2.0",
     "electron-updater": "^6.6.2",
     "next": "15.4.1",
     "react": "19.1.0",
