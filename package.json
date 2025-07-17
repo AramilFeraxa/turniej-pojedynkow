@@ -1,6 +1,6 @@
 {
   "name": "turniej-pojedynkow",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "private": true,
   "author": "Mateusz Kopeć",
   "description": "Aplikacja do organizacji turniejów pojedynków | HY",
@@ -17,6 +17,7 @@
     "appId": "com.example.turniej",
     "productName": "Turniej Pojedynkow",
     "artifactName": "${productName}-${version}.${ext}",
+    "compression": "maximum",
     "publish": [
       {
         "provider": "github",
@@ -28,28 +29,26 @@
       "buildResources": "build"
     },
     "files": [
-      "electron/**",
-      "out/**",
+      "electron/**/*",
+      "out/**/*",
       "package.json"
     ],
-    "extraResources": [
-      "out/**"
-    ],
+    "extraResources": [],
     "win": {
       "target": "nsis",
-      "icon": "public/icon.png"
+      "icon": "public/icon.ico"
     }
   },
   "dependencies": {
-    "concurrently": "^9.2.0",
-    "dotenv-cli": "^8.0.0",
-    "electron-updater": "^6.6.2",
     "next": "15.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "concurrently": "^9.2.0",
+    "dotenv-cli": "^8.0.0",
     "electron": "^37.2.1",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.6.2"
   }
 }

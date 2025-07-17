@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/Audience.module.css';
 import RootLayout from '@/app/layout';
+import AudiencePlayerCard from '../Components/Audience/PlayerCard';
+import Notification from '../Components/Notification';
 
 export default function Audience() {
     const [state, setState] = useState(null);
@@ -56,45 +58,53 @@ export default function Audience() {
                 <header className={styles.header}>
                     <h1>Turniej Pojedynków</h1>
                     <p>Runda {currentRound}</p>
-                    {matchWinner && (
-                        <h2 className={styles.highlight}>Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}</h2>
-                    )}
-                    {roundWinner && (
-                        <h3 className={styles.subHighlight}>Rundę wygrał: {roundWinner === 'p1' ? players.p1.name : players.p2.name}</h3>
+                    {matchWinner ? (
+                        <h2 className={styles.overlayMessage}>
+                            Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}
+                        </h2>
+                    ) : roundWinner && (
+                        <h3 className={styles.overlayMessage}>
+                            Rundę wygrał: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
+                        </h3>
                     )}
                 </header>
 
                 <main className={styles.main}>
-                    <section className={`${styles.playerCard} ${getBorderColor(players.p1.house)}`}>
-                        <h2>{players.p1.name}</h2>
-                        <p>Dom: <strong>{players.p1.house}</strong></p>
-                        <p>Punkty: <strong>{players.p1.score}</strong></p>
-                        <p>Wygrane rundy: <strong>{players.p1.roundsWon}</strong></p>
-                        {renderSpellBoxes(players.p1)}
-                    </section>
-
+                    <div className={styles.playerCardWrapper}>
+                        <AudiencePlayerCard
+                            player={players.p1}
+                            borderColor={getBorderColor(players.p1.house)}
+                            renderSpellBoxes={renderSpellBoxes}
+                        />
+                        <Notification
+                            showSpell={showSpells}
+                            showError={showError && errorMsg.includes(players.p1.name)}
+                            player={players.p1}
+                            errorMsg={errorMsg}
+                        />
+                    </div>
                     <div className={styles.vs}>VS</div>
 
-                    <section className={`${styles.playerCard} ${getBorderColor(players.p2.house)}`}>
-                        <h2>{players.p2.name}</h2>
-                        <p>Dom: <strong>{players.p2.house}</strong></p>
-                        <p>Punkty: <strong>{players.p2.score}</strong></p>
-                        <p>Wygrane rundy: <strong>{players.p2.roundsWon}</strong></p>
-                        {renderSpellBoxes(players.p2)}
-                    </section>
+                    <div className={styles.playerCardWrapper}>
+                        <AudiencePlayerCard
+                            player={players.p2}
+                            borderColor={getBorderColor(players.p2.house)}
+                            renderSpellBoxes={renderSpellBoxes}
+                        />
+                        <Notification
+                            showSpell={showSpells}
+                            showError={showError && errorMsg.includes(players.p2.name)}
+                            player={players.p2}
+                            errorMsg={errorMsg}
+                        />
+                    </div>
                 </main>
 
-                {showSpells && (
-                    <div className={styles.notification}>
-                        {players.p1.name} rzucił {players.p1.spell} & {players.p2.name} rzucił {players.p2.spell}
-                    </div>
-                )}
-
-                {showError && (
-                    <div className={styles.errorMsg}>
-                        {errorMsg}
-                    </div>
-                )}
+                <Notification
+                    showSpells={showSpells}
+                    errorMsg={errorMsg}
+                    players={players}
+                />
             </div>
         </RootLayout>
     );

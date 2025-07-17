@@ -98,6 +98,7 @@
 .used {
     background: #555;
     color: #999;
+    opacity: 1;
 }
 
 .used::after {
@@ -120,9 +121,15 @@
     color: #fff;
     cursor: pointer;
     font-size: 1.05rem;
+    width: 100%;
 }
 
-.errorButton:hover {
+.errorButton:disabled {
+    background: #555;
+    color: #999;
+}
+
+.errorButton:hover:not(:disabled) {
     background: #c62828;
 }
 
@@ -151,67 +158,15 @@
     cursor: not-allowed;
 }
 
-.notification {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2196f3;
-    padding: 1.1rem 2.2rem;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 1.05rem;
-    animation: fadeInOut 2.5s ease-in-out;
-    box-shadow: 0 0 12px rgba(33, 150, 243, 0.5);
-}
-
 .errorMsg {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 3rem;
+    padding: 0.5rem 1rem;
     background: #f44336;
-    padding: 1.1rem 2.2rem;
+    color: #fff;
     border-radius: 12px;
-    font-weight: bold;
-    font-size: 1.05rem;
-    animation: fadeInOut 2.5s ease-in-out;
-    box-shadow: 0 0 12px rgba(244, 67, 54, 0.5);
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translateY(12px) translateX(-50%);
-    }
-
-    10% {
-        opacity: 1;
-        transform: translateY(0) translateX(-50%);
-    }
-
-    90% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(-12px) translateX(-50%);
-    }
-}
-
-.highlight {
-    color: #ffeb3b;
-    font-weight: bold;
-    margin-top: 0.6rem;
-    font-size: 1.05rem;
-}
-
-.subHighlight {
-    color: #03a9f4;
-    font-weight: 500;
-    margin-top: 0.4rem;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
 }
 
 .playerCard select {
@@ -276,4 +231,36 @@
     justify-content: center;
     align-items: center;
     margin-top: 1rem;
+}
+
+.notifications {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.overlayMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    font-size: 1.8rem;
+    text-align: center;
+    z-index: 1000;
+}
+
+.individualNotification {
+    margin-top: 3rem;
+    padding: 0.5rem 1rem;
+    background: #2196f3;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(33, 150, 243, 0.5);
 }
