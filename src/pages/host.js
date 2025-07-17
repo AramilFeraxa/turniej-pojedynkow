@@ -31,6 +31,8 @@ export default function Host() {
         specjalne: ['Antares'],
     };
 
+    const houses = ['Antares', 'Imerus', 'Semperos', 'Xifang']
+
     const pointsPerSpell = {
         Aetos: 2,
         Iskos: 2,
@@ -157,6 +159,8 @@ export default function Host() {
 
             setPending1({ Phh: false, Wow: false, Antares: false });
             setPending2({ Phh: false, Wow: false, Antares: false });
+            setPlayer1(p => ({ ...p, spell: null }));
+            setPlayer2(p => ({ ...p, spell: null }));
 
             setShowSpells(false);
             syncState({ showSpells: false });
@@ -212,15 +216,6 @@ export default function Host() {
         setPending2({ Phh: false, Wow: false, Antares: false });
     };
 
-    const renderSpellUsage = (player) => (
-        <div className={styles.spellUsage}>
-            <div className={`${styles.spellBox} ${player.usedPhh ? styles.used : ''}`}>Phh</div>
-            <div className={`${styles.spellBox} ${player.usedWow ? styles.used : ''}`}>Wow</div>
-            <div className={`${styles.spellBox} ${player.usedAntares ? styles.used : ''}`}>Antares</div>
-        </div>
-    );
-
-
     return (
         <div className={styles.wrapper}>
             <header className={styles.header}>
@@ -235,23 +230,37 @@ export default function Host() {
                     <section key={id} className={styles.playerCard}>
                         <h2>{id === 'p1' ? 'Zawodnik 1' : 'Zawodnik 2'}</h2>
                         <input placeholder="Imię i nazwisko" value={player.name} onChange={e => handleInputChange(id, 'name', e.target.value)} />
-                        <input placeholder="Dom" value={player.house} onChange={e => handleInputChange(id, 'house', e.target.value)} />
+                        <select value={player.house} onChange={e => handleInputChange(id, 'house', e.target.value)}>
+                            <option value="">Wybierz dom</option>
+                            {houses.map(house => (
+                                <option key={house} value={house}>{house}</option>
+                            ))}
+                        </select>
                         {Object.entries(spellGroups).map(([group, spells]) => (
                             <div key={group} className={styles.group}>
                                 <h3>{group}</h3>
-                                {spells.map(spell => (
-                                    <button
-                                        key={spell}
-                                        onClick={() => handleSpell(id, spell)}
-                                        className={player.spell === spell ? styles.active : ''}
-                                    >
-                                        {spell}
-                                    </button>
-                                ))}
+                                {spells.map(spell => {
+                                    const used =
+                                        (spell === 'Phh' && player.usedPhh) ||
+                                        (spell === 'Wow' && player.usedWow) ||
+                                        (spell === 'Antares' && player.usedAntares);
+
+                                    return (
+                                        <button
+                                            key={spell}
+                                            onClick={() => handleSpell(id, spell)}
+                                            className={`${player.spell === spell ? styles.active : ''} ${used ? styles.disabledButton : ''}`}
+                                            disabled={used}
+                                        >
+                                            {spell}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         ))}
-                        <p>Punkty: {player.score} | Rundy: {player.roundsWon}</p>
-                        {renderSpellUsage(player, pending)}
+                        <div className={styles.pointBox}>
+                            <p>Punkty: <strong>{player.score}</strong> | Rundy: <strong>{player.roundsWon}</strong></p>
+                        </div>
                         <button className={styles.errorButton} onClick={() => handleError(id)}>Błąd</button>
                     </section>
                 ))}
