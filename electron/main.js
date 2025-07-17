@@ -1,4 +1,5 @@
-const { app, BrowserWindow, screen } = require('electron');
+const { app, BrowserWindow, screen, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
 let mainWindow, audienceWindow;
@@ -28,7 +29,29 @@ function createWindows() {
     audienceWindow.loadFile(path.join(__dirname, '../out/audience.html'));
 }
 
-app.whenReady().then(createWindows);
+app.whenReady().then(() => {
+    createWindows();
+
+    autoUpdater.checkForUpdatesAndNotify();
+
+    autoUpdater.on('update-available', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Aktualizacja dostępna',
+            message: 'Nowa wersja jest dostępna i zostanie pobrana w tle.'
+        });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Aktualizacja gotowa',
+            message: 'Aplikacja zostanie zrestartowana i zaktualizowana.'
+        }).then(() => {
+            autoUpdater.quitAndInstall();
+        });
+    });
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
