@@ -35,12 +35,21 @@ export default function Host() {
     const handleInputChange = (player, field, value) => player === 'p1' ? setPlayer1(p => ({ ...p, [field]: value })) : setPlayer2(p => ({ ...p, [field]: value }));
 
     const handleSpell = (player, spell) => {
+        const resetPending = { Phh: false, Wow: false, Antares: false };
         if (player === 'p1') {
             setPlayer1(p => ({ ...p, spell }));
-            if (['Phh', 'Wow', 'Antares'].includes(spell)) setPending1(p => ({ ...p, [spell]: true }));
+            if (['Phh', 'Wow', 'Antares'].includes(spell)) {
+                setPending1({ ...resetPending, [spell]: true });
+            } else {
+                setPending1(resetPending);
+            }
         } else {
             setPlayer2(p => ({ ...p, spell }));
-            if (['Phh', 'Wow', 'Antares'].includes(spell)) setPending2(p => ({ ...p, [spell]: true }));
+            if (['Phh', 'Wow', 'Antares'].includes(spell)) {
+                setPending2({ ...resetPending, [spell]: true });
+            } else {
+                setPending2(resetPending);
+            }
         }
     };
 
