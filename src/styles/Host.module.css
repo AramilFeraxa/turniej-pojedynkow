@@ -32,6 +32,18 @@
 .playerCard h2 {
     font-size: 1.9rem;
     margin-bottom: 0.6rem;
+    margin-block-start: 0;
+}
+
+.header h1 {
+    margin-block-start: 0.5rem;
+    margin-block-end: 0.5rem;
+}
+
+.header p {
+    margin-block-start: 0.3rem;
+    margin-block-end: 0.3rem;
+    font-size: 1.1rem;
 }
 
 .playerCard input {
@@ -54,6 +66,8 @@
     font-size: 0.9rem;
     color: #bbb;
     margin-top: 0.6rem;
+    margin-block-start: 0.7rem;
+    margin-block-end: 0;
 }
 
 .group button {
@@ -231,6 +245,12 @@
     justify-content: center;
     align-items: center;
     margin-top: 1rem;
+    flex-direction: column;
+    padding: 0.5rem;
+}
+
+.pointBox p {
+    margin: 0;
 }
 
 .notifications {
