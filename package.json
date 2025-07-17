@@ -43,12 +43,12 @@
     "next": "15.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "electron": "^37.2.1",
     "electron-updater": "^6.6.2"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
     "dotenv-cli": "^8.0.0",
+    "electron": "^37.2.1",
     "electron-builder": "^26.0.12"
   }
 }
