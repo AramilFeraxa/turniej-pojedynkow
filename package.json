@@ -1,6 +1,6 @@
 {
   "name": "turniej-pojedynkow",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -16,10 +16,8 @@
     "publish": [
       {
         "provider": "github",
-        "private": true,
         "owner": "AramilFeraxa",
-        "repo": "turniej-pojedynkow",
-        "token": "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"
+        "repo": "turniej-pojedynkow"
       }
     ],
     "directories": {
