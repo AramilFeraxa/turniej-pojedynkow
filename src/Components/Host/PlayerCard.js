@@ -2,7 +2,7 @@ import SpellGroup from './SpellGroup';
 import styles from '../../styles/Host.module.css';
 
 export default function PlayerCard({
-    id, player, pending, spellGroups, houses, handleInputChange, handleSpell, handleError, isRoundOver, isReady
+    id, player, pending, spellGroups, houses, handleInputChange, handleSpell, handleError, isRoundOver, isReady, renderSpellUsage
 }) {
     return (
         <section className={styles.playerCard}>
@@ -28,6 +28,7 @@ export default function PlayerCard({
             ))}
             <div className={styles.pointBox}>
                 <p>Punkty: <strong>{player.score}</strong> | Rundy: <strong>{player.roundsWon}</strong></p>
+                {renderSpellUsage(player, pending)}
             </div>
             <button className={styles.errorButton} disabled={isRoundOver || !isReady || !player.spell} onClick={() => handleError(id)}>Błąd</button>
         </section>

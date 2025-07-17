@@ -5,16 +5,12 @@ export default function SpellGroup({ group, spells, player, id, handleSpell, isR
         <div className={styles.group}>
             <h3>{group}</h3>
             {spells.map(spell => {
-                const used =
-                    (spell === 'Phh' && player.usedPhh) ||
-                    (spell === 'Wow' && player.usedWow) ||
-                    (spell === 'Antares' && player.usedAntares);
                 return (
                     <button
                         key={spell}
                         onClick={() => handleSpell(id, spell)}
-                        className={`${player.spell === spell ? styles.active : ''} ${used ? styles.disabledButton : ''}`}
-                        disabled={used || isRoundOver || !isReady}
+                        className={`${player.spell === spell ? styles.active : ''}`}
+                        disabled={isRoundOver || !isReady}
                     >
                         {spell}
                     </button>

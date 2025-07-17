@@ -76,13 +76,16 @@ export default function Audience() {
                             borderColor={getBorderColor(players.p1.house)}
                             renderSpellBoxes={renderSpellBoxes}
                         />
-                        <Notification
-                            showSpell={showSpells}
-                            showError={showError && errorMsg.includes(players.p1.name)}
-                            player={players.p1}
-                            errorMsg={errorMsg}
-                        />
+                        <div className={styles.notificationContainer}>
+                            <Notification
+                                showSpell={showSpells}
+                                showError={showError && errorMsg.includes(players.p1.name)}
+                                player={players.p1}
+                                errorMsg={errorMsg}
+                            />
+                        </div>
                     </div>
+
                     <div className={styles.vs}>VS</div>
 
                     <div className={styles.playerCardWrapper}>
@@ -91,20 +94,16 @@ export default function Audience() {
                             borderColor={getBorderColor(players.p2.house)}
                             renderSpellBoxes={renderSpellBoxes}
                         />
-                        <Notification
-                            showSpell={showSpells}
-                            showError={showError && errorMsg.includes(players.p2.name)}
-                            player={players.p2}
-                            errorMsg={errorMsg}
-                        />
+                        <div className={styles.notificationContainer}>
+                            <Notification
+                                showSpell={showSpells}
+                                showError={showError && errorMsg.includes(players.p2.name)}
+                                player={players.p2}
+                                errorMsg={errorMsg}
+                            />
+                        </div>
                     </div>
                 </main>
-
-                <Notification
-                    showSpells={showSpells}
-                    errorMsg={errorMsg}
-                    players={players}
-                />
             </div>
         </RootLayout>
     );

@@ -48,23 +48,78 @@ export default function Host() {
         const offender = player === 'p1' ? player1 : player2;
         const opponent = player === 'p1' ? player2 : player1;
         if (!opponent.spell) return;
+
         const pts = pointsPerSpell[opponent.spell];
-        if (player === 'p1') setPlayer2(p => ({ ...p, score: p.score + pts }));
-        else setPlayer1(p => ({ ...p, score: p.score + pts }));
+
+        if (player === 'p1') {
+            setPlayer2(p => {
+                const newScore = p.score + pts;
+                let winnerDetected = false;
+
+                if (newScore >= 8) {
+                    setRoundWinner('p2');
+                    setPlayer2(pp => ({ ...pp, roundsWon: pp.roundsWon + 1 }));
+                    if (p.roundsWon + 1 === 2) setMatchWinner('p2');
+                    winnerDetected = true;
+                }
+
+                return { ...p, score: newScore };
+            });
+        } else {
+            setPlayer1(p => {
+                const newScore = p.score + pts;
+                let winnerDetected = false;
+
+                if (newScore >= 8) {
+                    setRoundWinner('p1');
+                    setPlayer1(pp => ({ ...pp, roundsWon: pp.roundsWon + 1 }));
+                    if (p.roundsWon + 1 === 2) setMatchWinner('p1');
+                    winnerDetected = true;
+                }
+
+                return { ...p, score: newScore };
+            });
+        }
 
         setErrorMsg(`Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.`);
         setShowError(true);
         syncState({ errorMsg: `Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.` });
-        setTimeout(() => { setErrorMsg(''); setShowError(false); syncState({ errorMsg: '' }); }, 3000);
-        setPending1({ Phh: false, Wow: false, Antares: false });
-        setPending2({ Phh: false, Wow: false, Antares: false });
-        setPlayer1(p => ({ ...p, spell: null }));
-        setPlayer2(p => ({ ...p, spell: null }));
+
+        setTimeout(() => {
+            setErrorMsg('');
+            setShowError(false);
+            syncState({ errorMsg: '' });
+
+            setPending1({ Phh: false, Wow: false, Antares: false });
+            setPending2({ Phh: false, Wow: false, Antares: false });
+            setPlayer1(p => ({ ...p, spell: null }));
+            setPlayer2(p => ({ ...p, spell: null }));
+        }, 3000);
     };
+
 
     const resolveFight = () => {
         if (!player1.spell || !player2.spell) return;
-        setShowSpells(true); syncState({ showSpells: true });
+
+        const checkReuse = (player, pending) => {
+            return (
+                (player.spell === 'Phh' && player.usedPhh) ||
+                (player.spell === 'Wow' && player.usedWow) ||
+                (player.spell === 'Antares' && player.usedAntares)
+            );
+        };
+
+        if (checkReuse(player1, pending1)) {
+            handleError('p1');
+            return;
+        }
+        if (checkReuse(player2, pending2)) {
+            handleError('p2');
+            return;
+        }
+
+        setShowSpells(true);
+        syncState({ showSpells: true });
 
         setTimeout(() => {
             let p1Inc = 0, p2Inc = 0;
@@ -73,16 +128,36 @@ export default function Host() {
                 else if (beats[player2.spell]?.includes(player1.spell)) p2Inc = pointsPerSpell[player2.spell];
             }
 
-            setPlayer1(p => ({ ...p, score: p.score + p1Inc, usedPhh: pending1.Phh || p.usedPhh, usedWow: pending1.Wow || p.usedWow, usedAntares: pending1.Antares || p.usedAntares }));
-            setPlayer2(p => ({ ...p, score: p.score + p2Inc, usedPhh: pending2.Phh || p.usedPhh, usedWow: pending2.Wow || p.usedWow, usedAntares: pending2.Antares || p.usedAntares }));
+            setPlayer1(p => ({
+                ...p,
+                score: p.score + p1Inc,
+                usedPhh: pending1.Phh || p.usedPhh,
+                usedWow: pending1.Wow || p.usedWow,
+                usedAntares: pending1.Antares || p.usedAntares
+            }));
+
+            setPlayer2(p => ({
+                ...p,
+                score: p.score + p2Inc,
+                usedPhh: pending2.Phh || p.usedPhh,
+                usedWow: pending2.Wow || p.usedWow,
+                usedAntares: pending2.Antares || p.usedAntares
+            }));
 
             let winner = null;
             if (player1.score + p1Inc >= 8) winner = 'p1';
             if (player2.score + p2Inc >= 8) winner = 'p2';
 
             if (winner) {
-                if (winner === 'p1') { setPlayer1(p => ({ ...p, roundsWon: p.roundsWon + 1 })); setRoundWinner('p1'); if (player1.roundsWon + 1 === 2) setMatchWinner('p1'); }
-                else { setPlayer2(p => ({ ...p, roundsWon: p.roundsWon + 1 })); setRoundWinner('p2'); if (player2.roundsWon + 1 === 2) setMatchWinner('p2'); }
+                if (winner === 'p1') {
+                    setPlayer1(p => ({ ...p, roundsWon: p.roundsWon + 1 }));
+                    setRoundWinner('p1');
+                    if (player1.roundsWon + 1 === 2) setMatchWinner('p1');
+                } else {
+                    setPlayer2(p => ({ ...p, roundsWon: p.roundsWon + 1 }));
+                    setRoundWinner('p2');
+                    if (player2.roundsWon + 1 === 2) setMatchWinner('p2');
+                }
             }
 
             setPending1({ Phh: false, Wow: false, Antares: false });
@@ -118,6 +193,14 @@ export default function Host() {
     };
     const resetGame = () => { setPlayer1({ ...initialPlayer }); setPlayer2({ ...initialPlayer }); setRoundWinner(null); setMatchWinner(null); setCurrentRound(1); setPending1({ Phh: false, Wow: false, Antares: false }); setPending2({ Phh: false, Wow: false, Antares: false }); };
 
+    const renderSpellUsage = (player) => (
+        <div className={styles.spellUsage}>
+            <div className={`${styles.spellBox} ${player.usedPhh ? styles.used : ''}`}>Phh</div>
+            <div className={`${styles.spellBox} ${player.usedWow ? styles.used : ''}`}>Wow</div>
+            <div className={`${styles.spellBox} ${player.usedAntares ? styles.used : ''}`}>Antares</div>
+        </div>
+    );
+
     return (
         <div className={styles.wrapper}>
             <header className={styles.header}>
@@ -140,6 +223,7 @@ export default function Host() {
                             {...{ id, player, pending, spellGroups, houses, handleInputChange, handleSpell, handleError }}
                             isRoundOver={isRoundOver}
                             isReady={player.name.trim() !== '' && player.house.trim() !== ''}
+                            renderSpellUsage={renderSpellUsage}
                         />
                         <Notification
                             showSpell={showSpells}
