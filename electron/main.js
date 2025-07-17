@@ -1,8 +1,33 @@
-const { app, BrowserWindow, screen, dialog } = require('electron');
+const { app, BrowserWindow, screen, dialog, Menu } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
 let mainWindow, audienceWindow;
+
+const isMac = process.platform === 'darwin';
+
+const template = [
+    ...(isMac ? [{ role: 'appMenu' }] : []),
+    {
+        label: 'Help',
+        submenu: [
+            {
+                label: 'Sprawdź aktualizacje',
+                click: () => {
+                    autoUpdater.checkForUpdates();
+                    dialog.showMessageBox({
+                        type: 'info',
+                        title: 'Sprawdzanie aktualizacji',
+                        message: 'Trwa sprawdzanie dostępnych aktualizacji...'
+                    });
+                }
+            }
+        ]
+    }
+];
+
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
 
 function createWindows() {
     const displays = screen.getAllDisplays();
@@ -42,6 +67,14 @@ app.whenReady().then(() => {
         });
     });
 
+    autoUpdater.on('update-not-available', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Aktualizacje',
+            message: 'Masz już najnowszą wersję.'
+        });
+    });
+
     autoUpdater.on('update-downloaded', () => {
         dialog.showMessageBox({
             type: 'info',
@@ -50,6 +83,10 @@ app.whenReady().then(() => {
         }).then(() => {
             autoUpdater.quitAndInstall();
         });
+    });
+
+    autoUpdater.on('error', (err) => {
+        console.error('Updater error:', err);
     });
 });
 
