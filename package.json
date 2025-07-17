@@ -16,8 +16,10 @@
     "publish": [
       {
         "provider": "github",
+        "private": true,
         "owner": "AramilFeraxa",
-        "repo": "turniej-pojedynkow"
+        "repo": "turniej-pojedynkow",
+        "token": "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"
       }
     ],
     "directories": {
