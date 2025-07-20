@@ -1,5 +1,9 @@
 .wrapper {
-    background: #1e1e1e;
+    background: radial-gradient(circle at 20% 30%, white 1px, transparent 1px),
+        radial-gradient(circle at 70% 80%, white 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, white 1px, transparent 1px),
+        #1e1e1e;
+    background-size: 100px 100px;
     color: #f5f5f5;
     min-height: 100vh;
     font-family: 'Segoe UI', sans-serif;
@@ -11,6 +15,16 @@
     background: #292929;
     padding: 0.5rem;
     border-bottom: 2px solid #444;
+}
+
+.header p {
+    margin-block-end: 0;
+    margin-block-start: 10px;
+}
+
+.header h1 {
+    margin-block-end: 0;
+    margin-block-start: 0;
 }
 
 .main {
@@ -144,6 +158,10 @@
     border: 2px solid #f7a70b;
 }
 
+.borderPurple {
+    border: 2px solid #5F4BB6;
+}
+
 .notifications {
     display: flex;
     flex-direction: column;
@@ -153,7 +171,7 @@
 
 .overlayMessage {
     position: fixed;
-    top: 80%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.85);
@@ -187,4 +205,32 @@
 
 .individualNotification {
     background: #2196f3;
+}
+
+.houseLogo {
+    width: 280px;
+    height: auto;
+    object-fit: cover;
+}
+
+@keyframes winnerAnimation {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.7);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+    }
+}
+
+.winnerCard {
+    animation: winnerAnimation 2s ease-in-out infinite;
+    border-radius: 15px;
 }
