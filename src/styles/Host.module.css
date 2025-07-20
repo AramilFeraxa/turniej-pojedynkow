@@ -1,5 +1,9 @@
 .wrapper {
-    background: #1e1e1e;
+    background: radial-gradient(circle at 20% 30%, white 1px, transparent 1px),
+        radial-gradient(circle at 70% 80%, white 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, white 1px, transparent 1px),
+        #1e1e1e;
+    background-size: 100px 100px;
     color: #f5f5f5;
     min-height: 100vh;
     font-family: 'Segoe UI', sans-serif;

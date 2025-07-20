@@ -20,7 +20,7 @@ export default function Host() {
     const [showError, setShowError] = useState(false);
 
     const spellGroups = { podstawowe: ['Iskos', 'Aetos', 'Olor'], obronne: ['Phh', 'Wow'], specjalne: ['Antares'] };
-    const houses = ['Antares', 'Imerus', 'Semperos', 'Xifang'];
+    const houses = ['Antares', 'Imerus', 'Semperos', 'Xifang', 'Psor'];
     const pointsPerSpell = { Aetos: 2, Iskos: 2, Olor: 2, Phh: 1, Wow: 1, Antares: 3 };
     const beats = { Iskos: ['Aetos'], Aetos: ['Olor'], Olor: ['Iskos'], Phh: ['Aetos', 'Iskos', 'Olor'], Wow: ['Aetos', 'Iskos', 'Olor'], Antares: ['Phh', 'Wow'] };
     const isRoundOver = player1.score >= 8 || player2.score >= 8;
@@ -36,22 +36,30 @@ export default function Host() {
 
     const handleSpell = (player, spell) => {
         const resetPending = { Phh: false, Wow: false, Antares: false };
+
         if (player === 'p1') {
-            setPlayer1(p => ({ ...p, spell }));
-            if (['Phh', 'Wow', 'Antares'].includes(spell)) {
-                setPending1({ ...resetPending, [spell]: true });
-            } else {
-                setPending1(resetPending);
-            }
+            setPlayer1(p => {
+                const newSpell = p.spell === spell ? null : spell;
+                if (['Phh', 'Wow', 'Antares'].includes(newSpell)) {
+                    setPending1({ ...resetPending, [newSpell]: true });
+                } else {
+                    setPending1(resetPending);
+                }
+                return { ...p, spell: newSpell };
+            });
         } else {
-            setPlayer2(p => ({ ...p, spell }));
-            if (['Phh', 'Wow', 'Antares'].includes(spell)) {
-                setPending2({ ...resetPending, [spell]: true });
-            } else {
-                setPending2(resetPending);
-            }
+            setPlayer2(p => {
+                const newSpell = p.spell === spell ? null : spell;
+                if (['Phh', 'Wow', 'Antares'].includes(newSpell)) {
+                    setPending2({ ...resetPending, [newSpell]: true });
+                } else {
+                    setPending2(resetPending);
+                }
+                return { ...p, spell: newSpell };
+            });
         }
     };
+
 
     const handleError = (player) => {
         const offender = player === 'p1' ? player1 : player2;
@@ -226,13 +234,17 @@ export default function Host() {
                 )}
             </header>
             <main className={styles.main}>
-                {[{ id: 'p1', player: player1, pending: pending1 }, { id: 'p2', player: player2, pending: pending2 }].map(({ id, player, pending }) => (
+                {[
+                    { id: 'p1', player: player1, pending: pending1, opponentSpell: player2.spell },
+                    { id: 'p2', player: player2, pending: pending2, opponentSpell: player1.spell }
+                ].map(({ id, player, pending, opponentSpell }) => (
                     <div key={id} className={styles.playerCardWrapper}>
                         <PlayerCard
                             {...{ id, player, pending, spellGroups, houses, handleInputChange, handleSpell, handleError }}
                             isRoundOver={isRoundOver}
                             isReady={player.name.trim() !== '' && player.house.trim() !== ''}
                             renderSpellUsage={renderSpellUsage}
+                            opponentSpell={opponentSpell}
                         />
                         <Notification
                             showSpell={showSpells}
@@ -242,6 +254,7 @@ export default function Host() {
                         />
                     </div>
                 ))}
+
             </main>
 
             <Controls resolveFight={resolveFight} nextRound={nextRound} resetGame={resetGame} disabled={!player1.spell || !player2.spell || isRoundOver} />

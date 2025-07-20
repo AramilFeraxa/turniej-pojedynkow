@@ -5,7 +5,7 @@ export default function Notification({ showSpell, showError, player, errorMsg })
         <>
             {showSpell && player && (
                 <div className={styles.individualNotification}>
-                    {player.spell}!
+                    🪄 {player.spell}!
                 </div>
             )}
             {showError && errorMsg && (

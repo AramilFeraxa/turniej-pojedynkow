@@ -48,6 +48,7 @@ export default function Audience() {
             case 'Semperos': return styles.borderGreen;
             case 'Antares': return styles.borderYellow;
             case 'Imerus': return styles.borderBlue;
+            case 'Psor': return styles.borderPurple;
             default: return '';
         }
     };
@@ -70,7 +71,10 @@ export default function Audience() {
                 </header>
 
                 <main className={styles.main}>
-                    <div className={styles.playerCardWrapper}>
+                    <div
+                        className={`${styles.playerCardWrapper} ${roundWinner === 'p1' ? styles.winnerCard : ''
+                            }`}
+                    >
                         <AudiencePlayerCard
                             player={players.p1}
                             borderColor={getBorderColor(players.p1.house)}
@@ -88,7 +92,10 @@ export default function Audience() {
 
                     <div className={styles.vs}>VS</div>
 
-                    <div className={styles.playerCardWrapper}>
+                    <div
+                        className={`${styles.playerCardWrapper} ${roundWinner === 'p2' ? styles.winnerCard : ''
+                            }`}
+                    >
                         <AudiencePlayerCard
                             player={players.p2}
                             borderColor={getBorderColor(players.p2.house)}
