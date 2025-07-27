@@ -49,8 +49,8 @@ function createWindows() {
         title: "Turniej Pojedynków - Widownia",
         x: secondaryDisplay.bounds.x,
         y: secondaryDisplay.bounds.y,
-        width: 1280,
-        height: 720,
+        width: 1600,
+        height: 900,
         webPreferences: { nodeIntegration: false }
     });
 

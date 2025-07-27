@@ -10,6 +10,12 @@
     font-size: 1.05rem;
 }
 
+@media (max-height: 840px) {
+    .wrapper {
+        padding-bottom: 2.2rem;
+    }
+}
+
 .header {
     background: #292929;
     padding: 0.5rem;
