@@ -1,230 +1,170 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/Host.module.css';
-import "../app/globals.css";
+import '../app/globals.css';
 
 import PlayerCard from '../Components/Host/PlayerCard';
 import Controls from '../Components/Host/Controls';
 import Notification from '../Components/Notification';
 
+const initialPlayer = { name: '', house: '', spell: null, score: 0, roundsWon: 0, used: { Phh: false, Wow: false, Antares: false } };
+const spellGroups = { podstawowe: ['Iskos', 'Aetos', 'Olor'], obronne: ['Phh', 'Wow'], specjalne: ['Antares'] };
+const houses = ['Antares', 'Imerus', 'Semperos', 'Xifang', 'Psor'];
+const pointsPerSpell = { Aetos: 2, Iskos: 2, Olor: 2, Phh: 1, Wow: 1, Antares: 3 };
+const beats = { Iskos: ['Aetos'], Aetos: ['Olor'], Olor: ['Iskos'], Phh: ['Aetos', 'Iskos', 'Olor'], Wow: ['Aetos', 'Iskos', 'Olor'], Antares: ['Phh', 'Wow'] };
+
 export default function Host() {
-    const initialPlayer = { name: '', house: '', spell: null, score: 0, roundsWon: 0, usedPhh: false, usedWow: false, usedAntares: false };
-    const [player1, setPlayer1] = useState({ ...initialPlayer });
-    const [player2, setPlayer2] = useState({ ...initialPlayer });
-    const [pending1, setPending1] = useState({ Phh: false, Wow: false, Antares: false });
-    const [pending2, setPending2] = useState({ Phh: false, Wow: false, Antares: false });
+    const [players, setPlayers] = useState({ p1: { ...initialPlayer }, p2: { ...initialPlayer } });
+    const [pending, setPending] = useState({ p1: { Phh: false, Wow: false, Antares: false }, p2: { Phh: false, Wow: false, Antares: false } });
     const [currentRound, setCurrentRound] = useState(1);
     const [roundWinner, setRoundWinner] = useState(null);
     const [matchWinner, setMatchWinner] = useState(null);
     const [showSpells, setShowSpells] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('');
-    const [showError, setShowError] = useState(false);
+    const [notification, setNotification] = useState({ showError: false, msg: '' });
 
-    const spellGroups = { podstawowe: ['Iskos', 'Aetos', 'Olor'], obronne: ['Phh', 'Wow'], specjalne: ['Antares'] };
-    const houses = ['Antares', 'Imerus', 'Semperos', 'Xifang', 'Psor'];
-    const pointsPerSpell = { Aetos: 2, Iskos: 2, Olor: 2, Phh: 1, Wow: 1, Antares: 3 };
-    const beats = { Iskos: ['Aetos'], Aetos: ['Olor'], Olor: ['Iskos'], Phh: ['Aetos', 'Iskos', 'Olor'], Wow: ['Aetos', 'Iskos', 'Olor'], Antares: ['Phh', 'Wow'] };
-    const isRoundOver = player1.score >= 8 || player2.score >= 8;
+    const isRoundOver = Math.max(players.p1.score, players.p2.score) >= 8;
 
-    const syncState = (extra = {}) => {
-        const state = { players: { p1: player1, p2: player2 }, currentRound, roundWinner, matchWinner, showSpells: extra.showSpells ?? showSpells, showError, errorMsg: extra.errorMsg || errorMsg };
+    const syncState = useCallback((extra = {}) => {
+        const state = {
+            players,
+            currentRound,
+            roundWinner,
+            matchWinner,
+            showSpells: extra.showSpells ?? showSpells,
+            showError: extra.showError ?? notification.showError,
+            errorMsg: extra.errorMsg ?? notification.msg,
+        };
         localStorage.setItem('turniejState', JSON.stringify(state));
+    }, [players, currentRound, roundWinner, matchWinner, showSpells, notification]);
+
+    useEffect(() => { syncState(); }, [players, currentRound, roundWinner, matchWinner, showSpells, notification, syncState]);
+
+    const updatePlayer = (id, updater) => setPlayers(prev => ({ ...prev, [id]: updater(prev[id]) }));
+    const resetPendingFor = id => setPending(prev => ({ ...prev, [id]: { Phh: false, Wow: false, Antares: false } }));
+
+    const handleInputChange = (id, field, value) => {
+        updatePlayer(id, p => ({ ...p, [field]: value }));
     };
 
-    useEffect(() => { syncState(); }, [player1, player2, currentRound, roundWinner, matchWinner, showSpells]);
-
-    const handleInputChange = (player, field, value) => player === 'p1' ? setPlayer1(p => ({ ...p, [field]: value })) : setPlayer2(p => ({ ...p, [field]: value }));
-
-    const handleSpell = (player, spell) => {
-        const resetPending = { Phh: false, Wow: false, Antares: false };
-
-        if (player === 'p1') {
-            setPlayer1(p => {
-                const newSpell = p.spell === spell ? null : spell;
-                if (['Phh', 'Wow', 'Antares'].includes(newSpell)) {
-                    setPending1({ ...resetPending, [newSpell]: true });
-                } else {
-                    setPending1(resetPending);
-                }
-                return { ...p, spell: newSpell };
-            });
-        } else {
-            setPlayer2(p => {
-                const newSpell = p.spell === spell ? null : spell;
-                if (['Phh', 'Wow', 'Antares'].includes(newSpell)) {
-                    setPending2({ ...resetPending, [newSpell]: true });
-                } else {
-                    setPending2(resetPending);
-                }
-                return { ...p, spell: newSpell };
-            });
-        }
+    const handleSpell = (id, spell) => {
+        updatePlayer(id, p => {
+            const newSpell = p.spell === spell ? null : spell;
+            if (['Phh', 'Wow', 'Antares'].includes(newSpell)) {
+                setPending(prev => ({ ...prev, [id]: { Phh: false, Wow: false, Antares: false, [newSpell]: true } }));
+            } else {
+                resetPendingFor(id);
+            }
+            return { ...p, spell: newSpell };
+        });
     };
 
-
-    const handleError = (player) => {
-        const offender = player === 'p1' ? player1 : player2;
-        const opponent = player === 'p1' ? player2 : player1;
+    const handleError = id => {
+        const offender = players[id];
+        const opponentId = id === 'p1' ? 'p2' : 'p1';
+        const opponent = players[opponentId];
         if (!opponent.spell) return;
 
         const pts = pointsPerSpell[opponent.spell];
+        updatePlayer(opponentId, p => {
+            const newScore = p.score + pts;
+            const updated = { ...p, score: newScore };
+            if (newScore >= 8) {
+                setRoundWinner(opponentId);
+                updated.roundsWon++;
+                if (updated.roundsWon === 2) setMatchWinner(opponentId);
+            }
+            return updated;
+        });
 
-        if (player === 'p1') {
-            setPlayer2(p => {
-                const newScore = p.score + pts;
-                let winnerDetected = false;
-
-                if (newScore >= 8) {
-                    setRoundWinner('p2');
-                    setPlayer2(pp => ({ ...pp, roundsWon: pp.roundsWon + 1 }));
-                    if (p.roundsWon + 1 === 2) setMatchWinner('p2');
-                    winnerDetected = true;
-                }
-
-                return { ...p, score: newScore };
-            });
-        } else {
-            setPlayer1(p => {
-                const newScore = p.score + pts;
-                let winnerDetected = false;
-
-                if (newScore >= 8) {
-                    setRoundWinner('p1');
-                    setPlayer1(pp => ({ ...pp, roundsWon: pp.roundsWon + 1 }));
-                    if (p.roundsWon + 1 === 2) setMatchWinner('p1');
-                    winnerDetected = true;
-                }
-
-                return { ...p, score: newScore };
-            });
-        }
-
-        setErrorMsg(`Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.`);
-        setShowError(true);
-        syncState({ errorMsg: `Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.` });
+        setNotification({ showError: true, msg: `Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.` });
+        syncState({ showError: true, errorMsg: notification.msg });
 
         setTimeout(() => {
-            setErrorMsg('');
-            setShowError(false);
-            syncState({ errorMsg: '' });
-
-            setPending1({ Phh: false, Wow: false, Antares: false });
-            setPending2({ Phh: false, Wow: false, Antares: false });
-            setPlayer1(p => ({ ...p, spell: null }));
-            setPlayer2(p => ({ ...p, spell: null }));
+            setNotification({ showError: false, msg: '' });
+            resetPendingFor('p1');
+            resetPendingFor('p2');
+            setPlayers(prev => ({
+                p1: { ...prev.p1, spell: null },
+                p2: { ...prev.p2, spell: null }
+            }));
+            syncState({ showError: false, errorMsg: '' });
         }, 3000);
     };
 
-
     const resolveFight = () => {
-        if (!player1.spell || !player2.spell) return;
+        const [p1, p2] = ['p1', 'p2'];
+        if (!players.p1.spell || !players.p2.spell) return;
 
-        const checkReuse = (player, pending) => {
-            return (
-                (player.spell === 'Phh' && player.usedPhh) ||
-                (player.spell === 'Wow' && player.usedWow) ||
-                (player.spell === 'Antares' && player.usedAntares)
-            );
+        const reused = id => {
+            const spell = players[id].spell;
+            return spell && players[id].used[spell];
         };
-
-        if (checkReuse(player1, pending1)) {
-            handleError('p1');
-            return;
-        }
-        if (checkReuse(player2, pending2)) {
-            handleError('p2');
-            return;
-        }
+        if (reused(p1)) return handleError(p1);
+        if (reused(p2)) return handleError(p2);
 
         setShowSpells(true);
         syncState({ showSpells: true });
 
         setTimeout(() => {
-            let p1Inc = 0, p2Inc = 0;
-            if (player1.spell !== player2.spell) {
-                if (beats[player1.spell]?.includes(player2.spell)) p1Inc = pointsPerSpell[player1.spell];
-                else if (beats[player2.spell]?.includes(player1.spell)) p2Inc = pointsPerSpell[player2.spell];
+            let inc = { p1: 0, p2: 0 };
+            const { spell: s1 } = players.p1;
+            const { spell: s2 } = players.p2;
+            if (s1 !== s2) {
+                if (beats[s1]?.includes(s2)) inc.p1 = pointsPerSpell[s1];
+                else if (beats[s2]?.includes(s1)) inc.p2 = pointsPerSpell[s2];
             }
 
-            setPlayer1(p => ({
-                ...p,
-                score: p.score + p1Inc,
-                usedPhh: pending1.Phh || p.usedPhh,
-                usedWow: pending1.Wow || p.usedWow,
-                usedAntares: pending1.Antares || p.usedAntares
-            }));
+            ['p1', 'p2'].forEach(id => {
+                const pts = inc[id];
+                updatePlayer(id, p => ({
+                    ...p,
+                    score: p.score + pts,
+                    used: { ...p.used, ...(pending[id].Phh && { Phh: true }), ...(pending[id].Wow && { Wow: true }), ...(pending[id].Antares && { Antares: true }) }
+                }));
+            });
 
-            setPlayer2(p => ({
-                ...p,
-                score: p.score + p2Inc,
-                usedPhh: pending2.Phh || p.usedPhh,
-                usedWow: pending2.Wow || p.usedWow,
-                usedAntares: pending2.Antares || p.usedAntares
-            }));
-
-            let winner = null;
-            if (player1.score + p1Inc >= 8) winner = 'p1';
-            if (player2.score + p2Inc >= 8) winner = 'p2';
-
-            if (winner) {
-                if (winner === 'p1') {
-                    setPlayer1(p => ({ ...p, roundsWon: p.roundsWon + 1 }));
-                    setRoundWinner('p1');
-                    if (player1.roundsWon + 1 === 2) setMatchWinner('p1');
-                } else {
-                    setPlayer2(p => ({ ...p, roundsWon: p.roundsWon + 1 }));
-                    setRoundWinner('p2');
-                    if (player2.roundsWon + 1 === 2) setMatchWinner('p2');
-                }
+            const newWin = Object.entries(inc).find(([id, val]) => players[id].score + val >= 8)?.[0];
+            if (newWin) {
+                setRoundWinner(newWin);
+                updatePlayer(newWin, p => ({ ...p, roundsWon: p.roundsWon + 1 }));
+                if (players[newWin].roundsWon + 1 === 2) setMatchWinner(newWin);
             }
 
-            setPending1({ Phh: false, Wow: false, Antares: false });
-            setPending2({ Phh: false, Wow: false, Antares: false });
-            setPlayer1(p => ({ ...p, spell: null }));
-            setPlayer2(p => ({ ...p, spell: null }));
+            resetPendingFor(p1);
+            resetPendingFor(p2);
+            setPlayers(prev => ({ p1: { ...prev.p1, spell: null }, p2: { ...prev.p2, spell: null } }));
             setShowSpells(false);
             syncState({ showSpells: false });
         }, 2000);
     };
 
     const nextRound = () => {
-        setPlayer1(p => ({
-            ...p,
-            score: 0,
-            spell: null,
-            usedPhh: false,
-            usedWow: false,
-            usedAntares: false
-        }));
-        setPlayer2(p => ({
-            ...p,
-            score: 0,
-            spell: null,
-            usedPhh: false,
-            usedWow: false,
-            usedAntares: false
-        }));
+        setPlayers({ p1: { ...initialPlayer }, p2: { ...initialPlayer } });
         setRoundWinner(null);
-        setPending1({ Phh: false, Wow: false, Antares: false });
-        setPending2({ Phh: false, Wow: false, Antares: false });
+        resetPendingFor('p1');
+        resetPendingFor('p2');
         setCurrentRound(r => r + 1);
     };
-    const resetGame = () => { setPlayer1({ ...initialPlayer }); setPlayer2({ ...initialPlayer }); setRoundWinner(null); setMatchWinner(null); setCurrentRound(1); setPending1({ Phh: false, Wow: false, Antares: false }); setPending2({ Phh: false, Wow: false, Antares: false }); };
 
-    const renderSpellUsage = (player) => (
+    const resetGame = () => {
+        setPlayers({ p1: { ...initialPlayer }, p2: { ...initialPlayer } });
+        setRoundWinner(null);
+        setMatchWinner(null);
+        setCurrentRound(1);
+        resetPendingFor('p1');
+        resetPendingFor('p2');
+    };
+
+    const renderSpellUsage = p => (
         <div className={styles.spellUsage}>
-            <div className={`${styles.spellBox} ${player.usedPhh ? styles.used : ''}`}>Phh</div>
-            <div className={`${styles.spellBox} ${player.usedWow ? styles.used : ''}`}>Wow</div>
-            <div className={`${styles.spellBox} ${player.usedAntares ? styles.used : ''}`}>Antares</div>
+            {Object.entries(p.used).map(([spell, used]) => (
+                <div key={spell} className={`${styles.spellBox} ${used ? styles.used : ''}`}>{spell}</div>
+            ))}
         </div>
     );
 
     const handleFullscreen = () => {
         const el = document.documentElement;
-        if (!document.fullscreenElement) {
-            el.requestFullscreen?.();
-        } else {
-            document.exitFullscreen?.();
-        }
+        document.fullscreenElement ? document.exitFullscreen?.() : el.requestFullscreen?.();
     };
 
     return (
@@ -235,47 +175,46 @@ export default function Host() {
                     <h1>Panel prowadzącego</h1>
                     <p>Runda {currentRound}</p>
                     {matchWinner ? (
-                        <h2 className={styles.overlayMessage}>
-                            Zwycięzca meczu: {matchWinner === 'p1' ? player1.name : player2.name}
-                        </h2>
+                        <h2 className={styles.overlayMessage}>Zwycięzca meczu: {players[matchWinner].name}</h2>
                     ) : roundWinner && (
-                        <h3 className={styles.overlayMessage}>
-                            Rundę wygrał: {roundWinner === 'p1' ? player1.name : player2.name}
-                        </h3>
+                        <h3 className={styles.overlayMessage}>Rundę wygrywa: {players[roundWinner].name}</h3>
                     )}
                 </div>
-                <button onClick={handleFullscreen} className={styles.fullscreenButton}>
-                    Fullscreen
-                </button>
+                <button onClick={handleFullscreen} className={styles.fullscreenButton}>Fullscreen</button>
             </header>
             <main className={styles.main}>
-                {[
-                    { id: 'p1', player: player1, pending: pending1, opponentSpell: player2.spell },
-                    { id: 'p2', player: player2, pending: pending2, opponentSpell: player1.spell }
-                ].map(({ id, player, pending, opponentSpell }) => (
+                {['p1', 'p2'].map(id => (
                     <div key={id} className={styles.playerCardWrapper}>
                         <PlayerCard
-                            {...{ id, player, pending, spellGroups, houses, handleInputChange, handleSpell, handleError }}
+                            id={id}
+                            player={players[id]}
+                            pending={pending[id]}
+                            spellGroups={spellGroups}
+                            houses={houses}
+                            handleInputChange={handleInputChange}
+                            handleSpell={handleSpell}
+                            handleError={handleError}
                             isRoundOver={isRoundOver}
-                            isReady={player.name.trim() !== '' && player.house.trim() !== ''}
+                            isReady={players[id].name.trim() !== '' && players[id].house.trim() !== ''}
                             renderSpellUsage={renderSpellUsage}
-                            opponentSpell={opponentSpell}
+                            opponentSpell={players[id === 'p1' ? 'p2' : 'p1'].spell}
                         />
                         <Notification
                             showSpell={showSpells}
-                            showError={showError && errorMsg.includes(player.name)}
-                            player={player}
-                            errorMsg={errorMsg}
+                            showError={notification.showError && notification.msg.includes(players[id].name)}
+                            player={players[id]}
+                            errorMsg={notification.msg}
                         />
                     </div>
                 ))}
-
             </main>
-
-            <Controls resolveFight={resolveFight} nextRound={nextRound} resetGame={resetGame} disabled={!player1.spell || !player2.spell || isRoundOver} />
-            <footer className={styles.footer}>
-                © 2025 Mateusz Kopeć / Aramil
-            </footer>
+            <Controls
+                resolveFight={resolveFight}
+                nextRound={nextRound}
+                resetGame={resetGame}
+                disabled={!players.p1.spell || !players.p2.spell || isRoundOver}
+            />
+            <footer className={styles.footer}>© 2025 Mateusz Kopeć / Aramil</footer>
         </div>
     );
 }

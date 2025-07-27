@@ -1,26 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import styles from '../styles/Audience.module.css';
 import RootLayout from '@/app/layout';
 import AudiencePlayerCard from '../Components/Audience/PlayerCard';
 import Notification from '../Components/Notification';
 
+const houseBorder = {
+    Xifang: styles.borderRed,
+    Semperos: styles.borderGreen,
+    Antares: styles.borderYellow,
+    Imerus: styles.borderBlue,
+    Psor: styles.borderPurple
+}
 export default function Audience() {
     const [state, setState] = useState(null);
+
+    const onStorage = useCallback(e => {
+        if (e.key === 'turniejState') {
+            setState(JSON.parse(e.newValue));
+        }
+    }, []);
 
     useEffect(() => {
         const stored = localStorage.getItem('turniejState');
         if (stored) setState(JSON.parse(stored));
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, [onStorage]);
 
-        const listener = (e) => {
-            if (e.key === 'turniejState') {
-                setState(JSON.parse(e.newValue));
-            }
-        };
-        window.addEventListener('storage', listener);
-        return () => window.removeEventListener('storage', listener);
-    }, []);
-
-    if (!state) return <div className={styles.wrapper}>Oczekiwanie na rozpoczęcie gry...</div>;
+    if (!state) {
+        return <div className={styles.wrapper}>Oczekiwanie na rozpoczęcie gry...</div>;
+    }
 
     const { players, currentRound, roundWinner, matchWinner, showSpells, showError, errorMsg } = state;
 
@@ -44,22 +53,31 @@ export default function Audience() {
 
     const handleFullscreen = () => {
         const el = document.documentElement;
-        if (!document.fullscreenElement) {
-            el.requestFullscreen?.();
-        } else {
-            document.exitFullscreen?.();
-        }
+        document.fullscreenElement ? document.exitFullscreen?.() : el.requestFullscreen?.();
     };
 
-    const getBorderColor = (house) => {
-        switch (house) {
-            case 'Xifang': return styles.borderRed;
-            case 'Semperos': return styles.borderGreen;
-            case 'Antares': return styles.borderYellow;
-            case 'Imerus': return styles.borderBlue;
-            case 'Psor': return styles.borderPurple;
-            default: return '';
-        }
+    const renderPlayerCard = id => {
+        const player = players[id];
+        const isWinner = roundWinner === id;
+        const borderColor = houseBorder[player.house] || '';
+
+        return (
+            <div key={id} className={`${styles.playerCardWrapper} ${isWinner ? styles.winnerCard : ''}`}>
+                <AudiencePlayerCard
+                    player={player}
+                    borderColor={borderColor}
+                    renderSpellBoxes={renderSpellBoxes}
+                />
+                <div className={styles.notificationContainer}>
+                    <Notification
+                        showSpell={showSpells}
+                        showError={showError && errorMsg.includes(player.name)}
+                        player={player}
+                        errorMsg={errorMsg}
+                    />
+                </div>
+            </div>
+        )
     };
 
     return (
@@ -76,7 +94,7 @@ export default function Audience() {
                             </h2>
                         ) : roundWinner && (
                             <h3 className={styles.overlayMessage}>
-                                Rundę wygrał: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
+                                Rundę wygrywa: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
                             </h3>
                         )}
                     </div>
@@ -86,45 +104,9 @@ export default function Audience() {
                 </header>
 
                 <main className={styles.main}>
-                    <div
-                        className={`${styles.playerCardWrapper} ${roundWinner === 'p1' ? styles.winnerCard : ''
-                            }`}
-                    >
-                        <AudiencePlayerCard
-                            player={players.p1}
-                            borderColor={getBorderColor(players.p1.house)}
-                            renderSpellBoxes={renderSpellBoxes}
-                        />
-                        <div className={styles.notificationContainer}>
-                            <Notification
-                                showSpell={showSpells}
-                                showError={showError && errorMsg.includes(players.p1.name)}
-                                player={players.p1}
-                                errorMsg={errorMsg}
-                            />
-                        </div>
-                    </div>
-
+                    {renderPlayerCard('p1')}
                     <div className={styles.vs}>VS</div>
-
-                    <div
-                        className={`${styles.playerCardWrapper} ${roundWinner === 'p2' ? styles.winnerCard : ''
-                            }`}
-                    >
-                        <AudiencePlayerCard
-                            player={players.p2}
-                            borderColor={getBorderColor(players.p2.house)}
-                            renderSpellBoxes={renderSpellBoxes}
-                        />
-                        <div className={styles.notificationContainer}>
-                            <Notification
-                                showSpell={showSpells}
-                                showError={showError && errorMsg.includes(players.p2.name)}
-                                player={players.p2}
-                                errorMsg={errorMsg}
-                            />
-                        </div>
-                    </div>
+                    {renderPlayerCard('p2')}
                 </main>
             </div>
             <footer className={styles.footer}>
