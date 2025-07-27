@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/Host.module.css';
 import '../app/globals.css';
+import ikonka from '../images/ikonka.png';
 
 import PlayerCard from '../Components/Host/PlayerCard';
 import Controls from '../Components/Host/Controls';
@@ -170,7 +171,7 @@ export default function Host() {
     return (
         <div className={styles.wrapper}>
             <header className={styles.header}>
-                <img src="/favicon.ico" alt="ikonka" className={styles.headerImageLeft} />
+                <img src={ikonka.src} alt="ikonka" className={styles.headerImageLeft} />
                 <div className={styles.headerText}>
                     <h1>Panel prowadzącego</h1>
                     <p>Runda {currentRound}</p>

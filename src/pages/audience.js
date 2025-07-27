@@ -3,6 +3,7 @@ import styles from '../styles/Audience.module.css';
 import RootLayout from '@/app/layout';
 import AudiencePlayerCard from '../Components/Audience/PlayerCard';
 import Notification from '../Components/Notification';
+import ikonka from '../images/ikonka.png';
 
 const houseBorder = {
     Xifang: styles.borderRed,
@@ -84,7 +85,7 @@ export default function Audience() {
         <RootLayout>
             <div className={styles.wrapper}>
                 <header className={styles.header}>
-                    <img src="/favicon.ico" alt="ikonka" className={styles.headerImageLeft} />
+                    <img src={ikonka.src} alt="ikonka" className={styles.headerImageLeft} />
                     <div className={styles.headerText}>
                         <h1>Turniej Pojedynków</h1>
                         <p>Runda {currentRound}</p>
