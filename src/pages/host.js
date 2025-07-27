@@ -218,20 +218,35 @@ export default function Host() {
         </div>
     );
 
+    const handleFullscreen = () => {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+            el.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    };
+
     return (
         <div className={styles.wrapper}>
             <header className={styles.header}>
-                <h1>Panel prowadzącego</h1>
-                <p>Runda {currentRound}</p>
-                {matchWinner ? (
-                    <h2 className={styles.overlayMessage}>
-                        Zwycięzca meczu: {matchWinner === 'p1' ? player1.name : player2.name}
-                    </h2>
-                ) : roundWinner && (
-                    <h3 className={styles.overlayMessage}>
-                        Rundę wygrał: {roundWinner === 'p1' ? player1.name : player2.name}
-                    </h3>
-                )}
+                <img src="/favicon.ico" alt="ikonka" className={styles.headerImageLeft} />
+                <div className={styles.headerText}>
+                    <h1>Panel prowadzącego</h1>
+                    <p>Runda {currentRound}</p>
+                    {matchWinner ? (
+                        <h2 className={styles.overlayMessage}>
+                            Zwycięzca meczu: {matchWinner === 'p1' ? player1.name : player2.name}
+                        </h2>
+                    ) : roundWinner && (
+                        <h3 className={styles.overlayMessage}>
+                            Rundę wygrał: {roundWinner === 'p1' ? player1.name : player2.name}
+                        </h3>
+                    )}
+                </div>
+                <button onClick={handleFullscreen} className={styles.fullscreenButton}>
+                    Fullscreen
+                </button>
             </header>
             <main className={styles.main}>
                 {[
@@ -258,6 +273,9 @@ export default function Host() {
             </main>
 
             <Controls resolveFight={resolveFight} nextRound={nextRound} resetGame={resetGame} disabled={!player1.spell || !player2.spell || isRoundOver} />
+            <footer className={styles.footer}>
+                © 2025 Mateusz Kopeć / Aramil
+            </footer>
         </div>
     );
 }
