@@ -15,6 +15,44 @@
     background: #292929;
     padding: 0.5rem;
     border-bottom: 2px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.headerText {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullscreenButton {
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    z-index: 1000;
+    transition: background 0.3s;
+}
+
+.fullscreenButton:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.headerImageLeft {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 10px;
 }
 
 .header p {
@@ -233,4 +271,17 @@
 .winnerCard {
     animation: winnerAnimation 2s ease-in-out infinite;
     border-radius: 15px;
+}
+
+.footer {
+    background: #292929;
+    padding: 0.6rem;
+    text-align: center;
+    border-top: 1px solid #444;
+    font-size: 0.9rem;
+    color: #bbb;
+    bottom: 0;
+    width: 100%;
+    position: fixed;
+    font-family: 'Segoe UI', sans-serif;
 }

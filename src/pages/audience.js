@@ -42,6 +42,15 @@ export default function Audience() {
         </div>
     );
 
+    const handleFullscreen = () => {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+            el.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    };
+
     const getBorderColor = (house) => {
         switch (house) {
             case 'Xifang': return styles.borderRed;
@@ -57,17 +66,23 @@ export default function Audience() {
         <RootLayout>
             <div className={styles.wrapper}>
                 <header className={styles.header}>
-                    <h1>Turniej Pojedynków</h1>
-                    <p>Runda {currentRound}</p>
-                    {matchWinner ? (
-                        <h2 className={styles.overlayMessage}>
-                            Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}
-                        </h2>
-                    ) : roundWinner && (
-                        <h3 className={styles.overlayMessage}>
-                            Rundę wygrał: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
-                        </h3>
-                    )}
+                    <img src="/favicon.ico" alt="ikonka" className={styles.headerImageLeft} />
+                    <div className={styles.headerText}>
+                        <h1>Turniej Pojedynków</h1>
+                        <p>Runda {currentRound}</p>
+                        {matchWinner ? (
+                            <h2 className={styles.overlayMessage}>
+                                Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}
+                            </h2>
+                        ) : roundWinner && (
+                            <h3 className={styles.overlayMessage}>
+                                Rundę wygrał: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
+                            </h3>
+                        )}
+                    </div>
+                    <button onClick={handleFullscreen} className={styles.fullscreenButton}>
+                        Fullscreen
+                    </button>
                 </header>
 
                 <main className={styles.main}>
@@ -112,6 +127,9 @@ export default function Audience() {
                     </div>
                 </main>
             </div>
+            <footer className={styles.footer}>
+                © 2025 Mateusz Kopeć / Aramil
+            </footer>
         </RootLayout>
     );
 }
