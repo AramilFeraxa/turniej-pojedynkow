@@ -1,3 +1,9 @@
+:root {
+    --header-h: 7vh;
+    --footer-h: 7vh;
+    --content-h: calc(100vh - var(--header-h) - var(--footer-h));
+}
+
 .wrapper {
     background: radial-gradient(circle at 20% 30%, white 1px, transparent 1px),
         radial-gradient(circle at 70% 80%, white 1px, transparent 1px),
@@ -6,14 +12,19 @@
     background-size: 100px 100px;
     color: #f5f5f5;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     font-family: 'Segoe UI', sans-serif;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: clamp(12px, 1.2vw, 18px);
+    overflow: hidden;
+    padding-bottom: var(--footer-h);
 }
 
 .header {
     background: #292929;
-    padding: 0.5rem;
+    height: var(--header-h);
+    padding: 0 1.2vw;
     border-bottom: 2px solid #444;
     display: flex;
     align-items: center;
@@ -31,15 +42,13 @@
 }
 
 .fullscreenButton {
-    top: 10px;
-    right: 10px;
     background: rgba(255, 255, 255, 0.1);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    padding: clamp(6px, 1vh, 12px) clamp(10px, 1.6vh, 18px);
+    font-size: clamp(12px, 1.8vh, 16px);
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     z-index: 1000;
     transition: background 0.3s;
 }
@@ -49,29 +58,35 @@
 }
 
 .headerImageLeft {
-    width: 50px;
-    height: 50px;
+    width: clamp(28px, 5vh, 50px);
+    height: clamp(28px, 5vh, 50px);
     object-fit: contain;
     border-radius: 10px;
 }
 
 .header p {
     margin-block-end: 0;
-    margin-block-start: 10px;
+    margin-block-start: 0.6vh;
+    font-size: clamp(12px, 2vh, 18px);
 }
 
 .header h1 {
-    margin-block-end: 0;
-    margin-block-start: 0;
+    margin: 0;
+    font-size: clamp(16px, 3vh, 28px);
 }
 
 .main {
+    flex: 1 1 auto;
+    height: var(--content-h);
     display: flex;
     justify-content: center;
-    align-items: stretch;
-    gap: 8rem;
-    flex-wrap: wrap;
-    padding: 3rem;
+    align-items: center;
+    gap: clamp(8px, 2vw, 32px);
+    flex-wrap: nowrap;
+    padding: clamp(8px, 1.6vw, 20px);
+    max-width: 100vw;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .playerCardWrapper {
@@ -80,60 +95,67 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    flex: 1 1 34%;
+    max-width: 40%;
+    min-width: 0;
 }
 
 .playerCard {
     background: #2b2b2b;
     border-radius: 15px;
-    padding: 2.5rem;
-    width: 350px;
+    padding: clamp(10px, 2.6vh, 24px);
+    width: 100%;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .playerCard h2 {
-    margin-bottom: 1rem;
-    font-size: 2.5rem;
+    margin: 0 0 1vh 0;
+    font-size: clamp(18px, 4.6vh, 46px);
 }
 
 .playerCard p {
     margin: 0.5rem 0;
-    font-size: 1.4rem;
+    font-size: clamp(12px, 2.2vh, 22px);
 }
 
 .vs {
-    font-size: 4rem;
+    font-size: clamp(20px, 5vh, 56px);
     font-weight: bold;
     align-self: center;
     color: #ff9800;
+    min-width: clamp(36px, 5vh, 72px);
+    text-align: center;
+    margin: 0 clamp(6px, 1.6vw, 20px);
 }
 
 .spellUsage {
-    margin-top: 1.5rem;
+    margin-top: 1.5vh;
     text-align: left;
 }
 
 .spellGroup {
-    margin-top: 1rem;
+    margin-top: 1vh;
 }
 
 .spellGroupLabel {
-    font-size: 1.1rem;
+    font-size: clamp(10px, 1.8vh, 14px);
     color: #bbb;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8vh;
 }
 
 .spellBoxes {
     display: flex;
-    gap: 0.6rem;
+    gap: clamp(4px, 0.8vw, 10px);
+    flex-wrap: wrap;
 }
 
 .spellBox {
-    padding: 0.5rem 0.8rem;
+    padding: 0.7vh 1.2vh;
     background: #444;
     border-radius: 6px;
-    font-size: 1.1rem;
+    font-size: clamp(11px, 2vh, 17px);
     font-weight: 600;
-    min-width: 80px;
+    min-width: clamp(60px, 9vw, 100px);
     text-align: center;
     position: relative;
     transition: background 0.3s, color 0.3s;
@@ -157,27 +179,29 @@
 
 .notification {
     position: fixed;
-    bottom: 30px;
+    bottom: 3vh;
     left: 50%;
     transform: translateX(-50%);
     background: #2196f3;
-    padding: 1.5rem 3rem;
+    padding: 1.2vh 2.2vh;
     border-radius: 15px;
     font-weight: bold;
-    font-size: 1.3rem;
+    font-size: clamp(12px, 2vh, 18px);
     animation: fadeInOut 2.5s ease-in-out;
     box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
 }
 
 .errorMsg {
-    margin-top: 3rem;
-    padding: 0.5rem 1rem;
+    padding: 0.6vh 1.2vh;
     background: #f44336;
     color: #fff;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: clamp(10px, 1.8vh, 16px);
     text-align: center;
     box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+    max-width: 90%;
+    width: max-content;
+    margin-top: 1vh;
 }
 
 .borderRed {
@@ -214,39 +238,36 @@
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.85);
     color: #fff;
-    padding: 2rem 3rem;
+    padding: 2vh 3vh;
     border-radius: 12px;
-    font-size: 1.8rem;
+    font-size: clamp(14px, 3vh, 28px);
     text-align: center;
     z-index: 1000;
 }
 
 .notificationContainer {
-    position: absolute;
-    bottom: -4.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
+    position: relative;
+    height: clamp(12px, 2.2vh, 24px);
+    margin-top: 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
 }
 
-.individualNotification,
-.errorMsg {
-    padding: 0.5rem 1rem;
+.individualNotification {
+    background: #2196f3;
+    padding: 0.5vh 1vh;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: clamp(10px, 1.8vh, 16px);
     text-align: center;
     box-shadow: 0 0 12px rgba(33, 150, 243, 0.5);
     max-width: 90%;
     width: max-content;
 }
 
-.individualNotification {
-    background: #2196f3;
-}
-
 .houseLogo {
-    width: 280px;
+    width: clamp(100px, 18vh, 200px);
     height: auto;
     object-fit: cover;
 }
@@ -275,13 +296,41 @@
 
 .footer {
     background: #292929;
-    padding: 0.6rem;
-    text-align: center;
+    height: var(--footer-h);
+    padding: 0 1vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-top: 1px solid #444;
-    font-size: 0.9rem;
+    font-size: clamp(11px, 1.8vh, 14px);
     color: #bbb;
-    bottom: 0;
     width: 100%;
     position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
     font-family: 'Segoe UI', sans-serif;
+}
+
+@media (min-width: 1800px) {
+    .main {
+        gap: clamp(24px, 3vw, 80px);
+        padding: clamp(16px, 2vw, 32px);
+    }
+}
+
+@media (max-height: 640px) {
+    :root {
+        --header-h: 6.5vh;
+        --footer-h: 6.5vh;
+    }
+
+    .vs {
+        font-size: clamp(18px, 4.6vh, 52px);
+    }
+
+    .playerCard h2 {
+        font-size: clamp(16px, 4.2vh, 42px);
+    }
 }
