@@ -39,14 +39,14 @@ export default function Audience() {
             <div className={styles.spellGroup}>
                 <div className={styles.spellGroupLabel}>Obronne</div>
                 <div className={styles.spellBoxes}>
-                    <div className={`${styles.spellBox} ${player.usedPhh ? styles.used : ''}`}>Phh</div>
-                    <div className={`${styles.spellBox} ${player.usedWow ? styles.used : ''}`}>Wow</div>
+                    <div className={`${styles.spellBox} ${player.used['Phh'] ? styles.used : ''}`}>Phh</div>
+                    <div className={`${styles.spellBox} ${player.used['Wow'] ? styles.used : ''}`}>Wow</div>
                 </div>
             </div>
             <div className={styles.spellGroup}>
                 <div className={styles.spellGroupLabel}>Specjalne</div>
                 <div className={styles.spellBoxes}>
-                    <div className={`${styles.spellBox} ${player.usedAntares ? styles.used : ''}`}>Antares</div>
+                    <div className={`${styles.spellBox} ${player.used['Antares'] ? styles.used : ''}`}>Antares</div>
                 </div>
             </div>
         </div>

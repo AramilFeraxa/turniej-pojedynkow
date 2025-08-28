@@ -76,6 +76,15 @@ export default function Host() {
             return updated;
         });
 
+        ['p1', 'p2'].forEach(playerId => {
+            if (players[playerId].spell && ['Phh', 'Wow', 'Antares'].includes(players[playerId].spell)) {
+                updatePlayer(playerId, p => ({
+                    ...p,
+                    used: { ...p.used, [p.spell]: true }
+                }));
+            }
+        });
+
         setNotification({ showError: true, msg: `Błąd: ${offender.name || 'Zawodnik'} popełnił błąd! ${opponent.name || 'Przeciwnik'} otrzymuje ${pts} pkt.` });
         syncState({ showError: true, errorMsg: notification.msg });
 
@@ -139,7 +148,20 @@ export default function Host() {
     };
 
     const nextRound = () => {
-        setPlayers({ p1: { ...initialPlayer }, p2: { ...initialPlayer } });
+        setPlayers(prev => ({
+            p1: {
+                ...prev.p1,
+                spell: null,
+                score: 0,
+                used: { Phh: false, Wow: false, Antares: false }
+            },
+            p2: {
+                ...prev.p2,
+                spell: null,
+                score: 0,
+                used: { Phh: false, Wow: false, Antares: false }
+            }
+        }));
         setRoundWinner(null);
         resetPendingFor('p1');
         resetPendingFor('p2');
