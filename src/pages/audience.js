@@ -10,13 +10,14 @@ const houseBorder = {
     Semperos: styles.borderGreen,
     Antares: styles.borderYellow,
     Imerus: styles.borderBlue,
-    Psor: styles.borderPurple
-}
+    Psor: styles.borderPurple,
+};
+
 export default function Audience() {
     const [state, setState] = useState(null);
 
-    const onStorage = useCallback(e => {
-        if (e.key === 'turniejState') {
+    const onStorage = useCallback((e) => {
+        if (e.key === 'turniejState' && e.newValue) {
             setState(JSON.parse(e.newValue));
         }
     }, []);
@@ -57,7 +58,7 @@ export default function Audience() {
         document.fullscreenElement ? document.exitFullscreen?.() : el.requestFullscreen?.();
     };
 
-    const renderPlayerCard = id => {
+    const renderPlayerCard = (id) => {
         const player = players[id];
         const isWinner = roundWinner === id;
         const borderColor = houseBorder[player.house] || '';
@@ -72,13 +73,13 @@ export default function Audience() {
                 <div className={styles.notificationContainer}>
                     <Notification
                         showSpell={showSpells}
-                        showError={showError && errorMsg.includes(player.name)}
+                        showError={showError && errorMsg?.includes(player.name)}
                         player={player}
                         errorMsg={errorMsg}
                     />
                 </div>
             </div>
-        )
+        );
     };
 
     return (
@@ -93,10 +94,12 @@ export default function Audience() {
                             <h2 className={styles.overlayMessage}>
                                 Zwycięzca meczu: {matchWinner === 'p1' ? players.p1.name : players.p2.name}
                             </h2>
-                        ) : roundWinner && (
-                            <h3 className={styles.overlayMessage}>
-                                Rundę wygrywa: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
-                            </h3>
+                        ) : (
+                            roundWinner && (
+                                <h3 className={styles.overlayMessage}>
+                                    Rundę wygrywa: {roundWinner === 'p1' ? players.p1.name : players.p2.name}
+                                </h3>
+                            )
                         )}
                     </div>
                     <button onClick={handleFullscreen} className={styles.fullscreenButton}>
@@ -110,6 +113,7 @@ export default function Audience() {
                     {renderPlayerCard('p2')}
                 </main>
             </div>
+
             <footer className={styles.footer}>
                 © 2025 Mateusz Kopeć / Aramil
             </footer>
